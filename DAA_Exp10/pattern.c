@@ -1,45 +1,86 @@
 #include <stdio.h>
-#include <string.h>
+
 int main()
 {
-    char txt[80], pat[80];
-    int q;
-   printf ("Enter the container string\n");
-   scanf ("%s", &txt);
-   printf ("Enter the pattern to be searched\n");
-   scanf ("%s", &pat);
-   int d = 256;
-   printf ("Enter a prime number : ");
-   scanf ("%d", &q);
-   int M = strlen (pat);
-   int N = strlen (txt);
-   int i, j;
-   int p = 0;
-   int t = 0;
-   int h = 1;
-   for (i = 0; i < M - 1; i++)
-      h = (h * d) % q;
-   for (i = 0; i < M; i++){
-        p = (d * p + pat[i]) % q;
-        t = (d * t + txt[i]) % q;
-   }
-   for (i = 0; i <= N - M; i++){
-        if (p == t)
+    int q, ns, np, p=0, s=0;
+    int i=0, index=0, sp_hit=0;
+    char ch;
+
+    printf("\nEnter length of sequence: ");
+    scanf("%d", &ns);
+
+    int seq[ns], hit[ns];
+
+    printf("Enter sequence: ");
+    scanf("%c", &ch);
+    for(i=0; i<ns; i++)
+    {
+        scanf("%c", &ch);
+        seq[i] = ch;
+        hit[i] = ns+100;
+    }
+
+    printf("Enter length of pattern: ");
+    scanf("%d", &np);
+
+    int pat[np];
+
+    printf("Enter pattern: ");
+    scanf("%c", &ch);
+    for(i=0; i<np; i++)
+    {
+        scanf("%c", &ch);
+        pat[i] = ch;
+        p = p*10 + pat[i];
+    }
+
+    printf("Enter hash key value: ");
+    scanf("%d", &q);
+
+    int hashT[ns-1], hashP;
+
+    hashP = p%q;
+
+    printf("\nShift   |    Sequence   |      Hash\t |\n");
+    printf("----------------------------------------------------------\n");
+
+    for(i=0; i<ns; i++)
+    {
+        printf("%d\t|\t%c\t|\t", i, (char)seq[i]);
+        s=0;
+        for(int k=i; k<i+np; k++)
         {
-            for (j = 0; j < M; j++)
+            s = s*10 + seq[k];
+        }
+        hashT[i] = s%q;
+        if(i!=ns-1)
+            printf("%d\t |  ",hashT[i]);
+        
+        if(hashT[i] == hashP)
+        {
+            printf("Hit\t");
+            for(int j=0; j<np; j++)
             {
-                if (txt[i + j] != pat[j])
-                    break;
+                if(seq[i+j] != pat[j])
+                {
+                    printf("(Spurious)");
+                    sp_hit++;
+                    goto next;
+                }
             }
-            if (j == M)
-            printf ("\nPattern found at index %d", i);
+            printf("(Valid)");
+            hit[index] = i;
+            index++;
         }
-        if (i < N - M)
-        {
-            t = (d * (t - txt[i] * h) + txt[i + M]) % q;
-            if (t < 0)
-            t = (t + q);
-        }
-   }
-   return 0;
+        next:
+        printf("\n");
+    }
+    for(i=0; hit[i]<ns; i++)
+    {
+        printf("\nString found at shift %d", hit[i]);
+    }
+    printf("\nNo. of valid hits: %d", i);
+    printf("\nNo. of spurious hits: %d\n\n", sp_hit);
 }
+//3141592653589793
+//cxyzghxyzvjkxyz
